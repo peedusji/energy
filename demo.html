@@ -3,31 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PhD Digital Twin — ERCOT Research</title>
+    <title>PhD Digital Twin — ERCOT</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --sky-summer: linear-gradient(170deg, #43CEA2 0%, #185a9d 100%);
-            --sky-winter: linear-gradient(170deg, #8e9eab 0%, #485563 100%);
-            --panel: rgba(255, 255, 255, 0.92);
-            --panel-glass: rgba(255, 255, 255, 0.7);
-            --primary: #1a2332;
-            --accent: #0ea5e9;
-            --accent-glow: rgba(14, 165, 233, 0.25);
-            --danger: #ef4444;
-            --danger-glow: rgba(239, 68, 68, 0.2);
-            --safe: #10b981;
-            --safe-glow: rgba(16, 185, 129, 0.2);
-            --warn: #f59e0b;
-            --warn-glow: rgba(245, 158, 11, 0.2);
-            --wire-neutral: #94a3b8;
-            --border: rgba(0,0,0,0.06);
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
-            --shadow-md: 0 8px 30px rgba(0,0,0,0.08);
-            --shadow-lg: 0 20px 60px rgba(0,0,0,0.12);
-            --shadow-xl: 0 30px 80px rgba(0,0,0,0.18);
-            --radius: 16px; --radius-sm: 10px; --radius-xs: 6px;
-        }
+        :root{--sky-summer:linear-gradient(170deg,#43CEA2 0%,#185a9d 100%);--sky-winter:linear-gradient(170deg,#8e9eab 0%,#485563 100%);--panel:rgba(255,255,255,0.92);--panel-glass:rgba(255,255,255,0.7);--primary:#1a2332;--accent:#0ea5e9;--accent-glow:rgba(14,165,233,0.25);--danger:#ef4444;--danger-glow:rgba(239,68,68,0.2);--safe:#10b981;--safe-glow:rgba(16,185,129,0.2);--warn:#f59e0b;--warn-glow:rgba(245,158,11,0.2);--wire-neutral:#94a3b8;--border:rgba(0,0,0,0.06);--shadow-sm:0 1px 3px rgba(0,0,0,0.06);--shadow-md:0 8px 30px rgba(0,0,0,0.08);--shadow-lg:0 20px 60px rgba(0,0,0,0.12);--shadow-xl:0 30px 80px rgba(0,0,0,0.18);--radius:16px;--radius-sm:10px;--radius-xs:6px;}
         *{box-sizing:border-box;margin:0;padding:0;}
         body{font-family:'DM Sans',sans-serif;height:100vh;background:var(--sky-summer);overflow:hidden;display:flex;flex-direction:column;transition:background 1.2s;user-select:none;color:var(--primary);}
         body.winter-mode{background:var(--sky-winter);}
@@ -48,7 +27,7 @@
 
         /* ═══ STORY ═══ */
         .story-container{width:min(960px,95%);height:min(560px,85%);background:white;border-radius:20px;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow-xl);}
-        .story-screen{flex:1;background:linear-gradient(180deg,#e0f2fe 0%,#f0f9ff 50%,#ecfdf5 100%);position:relative;overflow:hidden;}
+        .story-screen{flex:1;position:relative;overflow:hidden;}
         .story-screen svg{width:100%;height:100%;}
         .story-bar{padding:18px 32px;background:white;border-top:1px solid #f1f5f9;display:flex;align-items:center;gap:20px;min-height:70px;}
         .story-text{flex:1;font-size:0.95rem;color:#475569;line-height:1.5;}
@@ -70,8 +49,7 @@
         .city-dot.hot{background:rgba(239,68,68,0.15);box-shadow:0 0 20px rgba(239,68,68,0.2);}
         .city-dot.cool{background:rgba(14,165,233,0.15);box-shadow:0 0 20px rgba(14,165,233,0.15);}
         .city-dot::after{content:'';position:absolute;width:8px;height:8px;border-radius:50%;bottom:-2px;right:-2px;}
-        .city-dot.hot::after{background:var(--danger);}
-        .city-dot.cool::after{background:var(--accent);}
+        .city-dot.hot::after{background:var(--danger);}.city-dot.cool::after{background:var(--accent);}
         .city-name{font-size:0.7rem;font-weight:700;color:#475569;background:rgba(255,255,255,0.9);padding:2px 8px;border-radius:4px;}
         .city-temp{font-family:'JetBrains Mono',monospace;font-size:0.65rem;font-weight:700;}
         .city-temp.hot{color:var(--danger);}.city-temp.cool{color:var(--accent);}
@@ -103,8 +81,7 @@
         .season-sw{display:flex;background:#f1f5f9;padding:3px;border-radius:10px;margin-bottom:12px;}
         .season-btn{flex:1;padding:8px;border:none;background:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:0.78rem;color:#94a3b8;transition:0.25s;font-family:inherit;}
         .season-btn.active{background:white;color:var(--primary);box-shadow:var(--shadow-sm);}
-        .room-viz{position:relative;flex:1;}
-        .room-viz svg{width:100%;height:100%;}
+        .room-viz{position:relative;flex:1;}.room-viz svg{width:100%;height:100%;}
         .thermostat-control{background:white;padding:14px 18px;border-radius:12px;border:1px solid var(--border);box-shadow:var(--shadow-sm);}
         .thermo-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
         .thermo-label{font-size:0.78rem;font-weight:700;}
@@ -135,12 +112,11 @@
         /* ═══ METHOD ═══ */
         .method-container{display:flex;flex-direction:column;width:min(1060px,96%);height:min(600px,90%);background:white;border-radius:20px;padding:32px 36px;box-shadow:var(--shadow-xl);align-items:center;position:relative;overflow:hidden;}
         .method-container::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--accent),#6366f1,#a855f7);}
-        .method-header{text-align:center;margin-bottom:4px;}
-        .method-header h2{font-size:1.3rem;font-weight:900;}
+        .method-header h2{font-size:1.3rem;font-weight:900;text-align:center;}
         .pipeline-track{display:flex;justify-content:space-between;width:100%;margin-top:24px;position:relative;padding:0 30px;}
         .pipeline-line{position:absolute;top:42px;left:80px;right:80px;height:3px;background:#e2e8f0;z-index:0;border-radius:2px;}
         .pipeline-fill{position:absolute;top:42px;left:80px;height:3px;background:linear-gradient(90deg,var(--accent),#6366f1);z-index:1;width:0%;transition:width 0.8s cubic-bezier(0.4,0,0.2,1);border-radius:2px;}
-        .pipe-node{width:84px;height:84px;background:white;border:3px solid #e2e8f0;border-radius:50%;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:2;position:relative;transition:all 0.5s cubic-bezier(0.4,0,0.2,1);}
+        .pipe-node{width:84px;height:84px;background:white;border:3px solid #e2e8f0;border-radius:50%;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:2;position:relative;transition:all 0.5s cubic-bezier(0.4,0,0.2,1);cursor:pointer;}
         .pipe-node.active{border-color:var(--accent);background:linear-gradient(135deg,#f0f9ff,#ecfeff);transform:scale(1.12);box-shadow:0 0 0 6px var(--accent-glow),var(--shadow-md);}
         .pipe-node.done{border-color:var(--safe);background:linear-gradient(135deg,#f0fdf4,#ecfdf5);box-shadow:0 0 0 4px var(--safe-glow);}
         .pipe-icon{font-size:1.6rem;}
@@ -166,7 +142,6 @@
         </div>
         <div class="global-status"><div class="status-dot" id="global-dot"></div><span id="global-status">STABLE</span></div>
     </div>
-
     <div class="stage">
         <div id="frost-vignette"></div>
 
@@ -179,17 +154,13 @@
                     <div class="pipeline-fill" id="pipe-fill"></div>
                     <div class="pipe-node" id="node-1"><div class="pipe-icon">📊</div><div class="pipe-label">Data</div></div>
                     <div class="pipe-node" id="node-2"><div class="pipe-icon">🤖</div><div class="pipe-label">Predict</div></div>
-                    <div class="pipe-node" id="node-3"><div class="pipe-icon">🎲</div><div class="pipe-label">Risk</div></div>
-                    <div class="pipe-node" id="node-4"><div class="pipe-icon">📈</div><div class="pipe-label">Results</div></div>
+                    <div class="pipe-node" id="node-3"><div class="pipe-icon">⚡</div><div class="pipe-label">Stress Test</div></div>
+                    <div class="pipe-node" id="node-4"><div class="pipe-icon">🎯</div><div class="pipe-label">Proposed</div></div>
                 </div>
                 <div class="method-display" id="method-stage">
-                    <div class="method-content">
-                        <svg viewBox="0 0 700 260">
-                            <text x="350" y="120" text-anchor="middle" font-family="DM Sans" font-size="18" fill="#94a3b8" font-weight="700">Click ▶ to walk through each step</text>
-                        </svg>
-                    </div>
+                    <div class="method-content"><svg viewBox="0 0 700 260"><text x="350" y="130" text-anchor="middle" font-family="DM Sans" font-size="17" fill="#94a3b8" font-weight="700">Click ▶ to begin</text></svg></div>
                 </div>
-                <button class="step-btn" id="method-btn" onclick="nextMethodStep()">▶ Step 1: Data</button>
+                <button class="step-btn" id="method-btn" onclick="nextMethodStep()">▶ Next</button>
             </div>
         </div>
 
@@ -227,22 +198,14 @@
                             <text x="113" y="160" text-anchor="middle" fill="var(--accent)" font-family="JetBrains Mono" font-weight="bold" font-size="11" id="wall-temp">72</text>
                             <text x="113" y="182" text-anchor="middle" fill="#94a3b8" font-size="7" font-weight="600">°F</text>
                             <rect x="180" y="78" width="80" height="24" rx="4" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1.5"/>
-                            <g id="ac-lines" opacity="0">
-                                <line x1="195" y1="104" x2="195" y2="130" stroke="#93c5fd" stroke-width="1" stroke-dasharray="3 3"/>
-                                <line x1="210" y1="104" x2="210" y2="140" stroke="#93c5fd" stroke-width="1" stroke-dasharray="3 3"/>
-                                <line x1="225" y1="104" x2="225" y2="125" stroke="#93c5fd" stroke-width="1" stroke-dasharray="3 3"/>
-                                <line x1="240" y1="104" x2="240" y2="135" stroke="#93c5fd" stroke-width="1" stroke-dasharray="3 3"/>
-                            </g>
-                            <!-- Heater glow for winter -->
+                            <g id="ac-lines" opacity="0"><line x1="195" y1="104" x2="195" y2="130" stroke="#93c5fd" stroke-width="1" stroke-dasharray="3 3"/><line x1="210" y1="104" x2="210" y2="140" stroke="#93c5fd" stroke-width="1" stroke-dasharray="3 3"/><line x1="225" y1="104" x2="225" y2="125" stroke="#93c5fd" stroke-width="1" stroke-dasharray="3 3"/><line x1="240" y1="104" x2="240" y2="135" stroke="#93c5fd" stroke-width="1" stroke-dasharray="3 3"/></g>
                             <rect id="heater-glow" x="60" y="260" width="60" height="45" rx="6" fill="none" stroke="transparent" stroke-width="2" opacity="0"/>
                             <g id="avatar" transform="translate(230,300)">
-                                <rect x="-12" y="-55" width="10" height="55" rx="5" fill="#64748b"/>
-                                <rect x="2" y="-55" width="10" height="55" rx="5" fill="#64748b"/>
+                                <rect x="-12" y="-55" width="10" height="55" rx="5" fill="#64748b"/><rect x="2" y="-55" width="10" height="55" rx="5" fill="#64748b"/>
                                 <g id="c-shirt"><rect x="-20" y="-120" width="40" height="65" rx="8" fill="#60a5fa"/></g>
                                 <g id="c-jacket" style="display:none;"><rect x="-22" y="-122" width="44" height="68" rx="8" fill="#ea580c"/><line x1="0" y1="-122" x2="0" y2="-54" stroke="#c2410c" stroke-width="2"/></g>
                                 <circle cx="0" cy="-140" r="22" fill="#fcd34d"/>
-                                <circle cx="-7" cy="-145" r="2.5" fill="#1e293b"/>
-                                <circle cx="7" cy="-145" r="2.5" fill="#1e293b"/>
+                                <circle cx="-7" cy="-145" r="2.5" fill="#1e293b"/><circle cx="7" cy="-145" r="2.5" fill="#1e293b"/>
                                 <path id="mouth" d="M-6,-134 Q0,-129 6,-134" fill="none" stroke="#1e293b" stroke-width="2" stroke-linecap="round"/>
                                 <g id="sweat" style="display:none;"><text x="22" y="-150" font-size="16">💧</text></g>
                                 <g id="shiver" style="display:none;"><text x="-35" y="-120" font-size="12">🥶</text></g>
@@ -259,18 +222,12 @@
                     <div class="grid-viz">
                         <div id="smoke-container"></div>
                         <svg viewBox="0 0 200 300">
-                            <rect x="140" y="120" width="30" height="180" rx="3" fill="#78909C"/>
-                            <rect x="137" y="115" width="36" height="12" rx="2" fill="#607D8B"/>
+                            <rect x="140" y="120" width="30" height="180" rx="3" fill="#78909C"/><rect x="137" y="115" width="36" height="12" rx="2" fill="#607D8B"/>
                             <path d="M25,300 L55,60 L85,300" fill="none" stroke="#546E7A" stroke-width="3.5" stroke-linejoin="round"/>
-                            <line x1="38" y1="120" x2="72" y2="120" stroke="#546E7A" stroke-width="3"/>
-                            <line x1="42" y1="180" x2="68" y2="180" stroke="#546E7A" stroke-width="2.5"/>
+                            <line x1="38" y1="120" x2="72" y2="120" stroke="#546E7A" stroke-width="3"/><line x1="42" y1="180" x2="68" y2="180" stroke="#546E7A" stroke-width="2.5"/>
                             <path id="lab-wire" d="M-10,120 C50,110 100,130 220,125" class="wire"/>
                             <circle id="lab-electron" r="5" class="electron"><animateMotion dur="1.8s" repeatCount="indefinite" path="M-10,120 C50,110 100,130 220,125"/></circle>
-                            <g id="spark" class="spark">
-                                <line x1="195" y1="110" x2="210" y2="100" stroke="#fbbf24" stroke-width="2.5"/>
-                                <line x1="195" y1="130" x2="210" y2="140" stroke="#fbbf24" stroke-width="2.5"/>
-                                <line x1="200" y1="120" x2="218" y2="120" stroke="#fbbf24" stroke-width="2.5"/>
-                            </g>
+                            <g id="spark" class="spark"><line x1="195" y1="110" x2="210" y2="100" stroke="#fbbf24" stroke-width="2.5"/><line x1="195" y1="130" x2="210" y2="140" stroke="#fbbf24" stroke-width="2.5"/><line x1="200" y1="120" x2="218" y2="120" stroke="#fbbf24" stroke-width="2.5"/></g>
                         </svg>
                     </div>
                     <div class="research-note" id="research-note"></div>
@@ -301,7 +258,7 @@
                     <div class="balance-indicator">
                         <div class="balance-icon" id="balance-icon">⚖️</div>
                         <div class="balance-label" id="data-status" style="color:var(--safe);">BALANCED</div>
-                        <div class="balance-desc" id="data-desc">Houston rain offsets Dallas heat → accurate composite load.</div>
+                        <div class="balance-desc" id="data-desc">Houston rain offsets Dallas heat → accurate load.</div>
                     </div>
                 </div>
             </div>
@@ -312,133 +269,258 @@
             <div class="story-container">
                 <div class="story-screen">
                     <svg viewBox="0 0 800 400">
-                        <defs><linearGradient id="sky-grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#bae6fd"/><stop offset="100%" stop-color="#f0f9ff"/></linearGradient></defs>
-                        <rect width="800" height="400" fill="url(#sky-grad)"/>
-                        <rect x="0" y="300" width="800" height="100" fill="#d1d5db"/>
-                        <rect x="0" y="295" width="800" height="10" fill="#e5e7eb"/>
+                        <defs>
+                            <linearGradient id="sky-grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#bae6fd"/><stop offset="100%" stop-color="#f0f9ff"/></linearGradient>
+                            <linearGradient id="sky-hot" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fecaca"/><stop offset="100%" stop-color="#fef3c7"/></linearGradient>
+                            <linearGradient id="sky-safe" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#bbf7d0"/><stop offset="100%" stop-color="#ecfdf5"/></linearGradient>
+                        </defs>
+                        <rect id="story-sky" width="800" height="400" fill="url(#sky-grad)"/>
+                        <rect x="0" y="300" width="800" height="100" fill="#d1d5db"/><rect x="0" y="295" width="800" height="10" fill="#e5e7eb"/>
                         <g transform="translate(120,295)"><path d="M0,0 L25,-190 L50,0" fill="none" stroke="#475569" stroke-width="5" stroke-linejoin="round"/><line x1="10" y1="-130" x2="40" y2="-130" stroke="#475569" stroke-width="4"/><line x1="12" y1="-80" x2="38" y2="-80" stroke="#475569" stroke-width="3"/></g>
                         <g transform="translate(480,140)"><rect x="20" y="60" width="160" height="100" rx="4" fill="white" stroke="#cbd5e1" stroke-width="2"/><path d="M0,65 L100,-15 L200,65" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2.5" stroke-linejoin="round"/><rect x="75" y="95" width="50" height="65" rx="3" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1.5"/><circle cx="115" cy="128" r="3" fill="#94a3b8"/><rect x="145" y="80" width="25" height="18" rx="3" fill="white" stroke="#cbd5e1" stroke-width="1"/><text x="157" y="93" text-anchor="middle" font-family="JetBrains Mono" font-size="9" font-weight="bold" fill="#0ea5e9" id="story-temp">72°</text></g>
-                        <path id="story-wire" d="M145,105 C280,95 400,120 500,165" fill="none" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round"/>
-                        <circle id="story-electron" r="6" fill="#fbbf24" opacity="0"><animateMotion dur="1.8s" repeatCount="indefinite" path="M145,105 C280,95 400,120 500,165"/></circle>
-                        <g id="story-alert" opacity="0"><rect x="280" y="40" width="240" height="44" rx="10" fill="rgba(239,68,68,0.12)"/><text x="400" y="68" text-anchor="middle" font-family="DM Sans" font-size="18" font-weight="900" fill="#ef4444">⚠️ GRID OVERLOAD</text></g>
-                        <g id="story-success" opacity="0"><rect x="290" y="40" width="220" height="44" rx="10" fill="rgba(16,185,129,0.12)"/><text x="400" y="68" text-anchor="middle" font-family="DM Sans" font-size="18" font-weight="900" fill="#10b981">✅ GRID SAVED</text></g>
-                        <circle cx="700" cy="60" r="32" fill="#fbbf24" opacity="0.8"><animate attributeName="r" values="32;35;32" dur="3s" repeatCount="indefinite"/></circle>
+                        <path id="story-wire" d="M145,105 C280,95 400,120 500,165" fill="none" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round" style="transition:stroke 0.6s,filter 0.6s;"/>
+                        <circle r="6" fill="#fbbf24" opacity="0.7"><animateMotion dur="1.8s" repeatCount="indefinite" path="M145,105 C280,95 400,120 500,165"/></circle>
+                        <g id="story-alert" opacity="0" style="transition:opacity 0.5s;"><rect x="280" y="40" width="240" height="44" rx="10" fill="rgba(239,68,68,0.12)"/><text x="400" y="68" text-anchor="middle" font-family="DM Sans" font-size="18" font-weight="900" fill="#ef4444">⚠️ GRID OVERLOAD</text></g>
+                        <g id="story-success" opacity="0" style="transition:opacity 0.5s;"><rect x="290" y="40" width="220" height="44" rx="10" fill="rgba(16,185,129,0.12)"/><text x="400" y="68" text-anchor="middle" font-family="DM Sans" font-size="18" font-weight="900" fill="#10b981">✅ GRID SAVED</text></g>
+                        <circle id="story-sun" cx="700" cy="60" r="32" fill="#fbbf24" opacity="0.8"><animate attributeName="r" values="32;35;32" dur="3s" repeatCount="indefinite"/></circle>
                     </svg>
-                    <div class="story-steps">
-                        <div class="story-step-dot" id="sdot-0"></div><div class="story-step-dot" id="sdot-1"></div><div class="story-step-dot" id="sdot-2"></div><div class="story-step-dot" id="sdot-3"></div>
-                    </div>
+                    <div class="story-steps"><div class="story-step-dot" id="sdot-0"></div><div class="story-step-dot" id="sdot-1"></div><div class="story-step-dot" id="sdot-2"></div><div class="story-step-dot" id="sdot-3"></div></div>
                 </div>
                 <div class="story-bar">
-                    <div class="story-text" id="story-msg">Texas summer peak. Press Start.</div>
-                    <button class="btn-play" id="story-play-btn" onclick="runStory()">▶ Start</button>
+                    <div class="story-text" id="story-msg">Texas summer peak day. Step through the scenario.</div>
+                    <button class="btn-play" id="story-play-btn" onclick="storyNext()">▶ Next</button>
                 </div>
             </div>
         </div>
     </div>
 
 <script>
-const APP={season:'summer',temp:72,part:0,smokeInt:null,methodStep:0,storyRunning:false};
+const APP={season:'summer',temp:72,part:0,smokeInt:null,methodStep:0,storyStep:-1};
 window.curLoad=0;
 
 function init(){
-    createGrid('grid-dal',8);createGrid('grid-hou',8);
-    createGrid('grid-aus',4);createGrid('grid-sa',4);
-    APP.smokeInt=setInterval(spawnSmoke,250);
-    updateLab();
+    createGrid('grid-dal',8);createGrid('grid-hou',8);createGrid('grid-aus',4);createGrid('grid-sa',4);
+    APP.smokeInt=setInterval(spawnSmoke,250);updateLab();
 }
 function createGrid(id,n){const el=document.getElementById(id);for(let i=0;i<n;i++){const d=document.createElement('div');d.className='house-block';el.appendChild(d);}}
 function setTab(id,btn){document.querySelectorAll('.view-panel').forEach(p=>p.classList.remove('active'));document.getElementById('view-'+id).classList.add('active');document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
 
-/* ═══ METHODOLOGY SVG DIAGRAMS ═══ */
+/* ═══ STORY — MANUAL STEP-BY-STEP ═══ */
+function storyNext(){
+    APP.storyStep++;
+    const btn=document.getElementById('story-play-btn'),txt=document.getElementById('story-msg');
+    const wire=document.getElementById('story-wire'),alert=document.getElementById('story-alert');
+    const success=document.getElementById('story-success'),st=document.getElementById('story-temp');
+    const sky=document.getElementById('story-sky'),sun=document.getElementById('story-sun');
+    const dots=[0,1,2,3].map(i=>document.getElementById(`sdot-${i}`));
+
+    // Reset all dots up to current
+    dots.forEach((d,i)=>{
+        if(i<APP.storyStep) d.className='story-step-dot done';
+        else if(i===APP.storyStep) d.className='story-step-dot current';
+        else d.className='story-step-dot';
+    });
+
+    if(APP.storyStep===0){
+        txt.innerText="105°F — every AC maxed out.";
+        wire.setAttribute('stroke','#94a3b8');wire.style.filter='none';
+        alert.setAttribute('opacity','0');success.setAttribute('opacity','0');
+        sky.setAttribute('fill','url(#sky-grad)');sun.setAttribute('opacity','0.8');
+        st.textContent='72°';btn.innerText='▶ Next';
+    }
+    else if(APP.storyStep===1){
+        txt.innerText="Demand exceeds supply. Blackouts loom.";
+        wire.setAttribute('stroke','#ef4444');wire.style.filter='drop-shadow(0 0 6px rgba(239,68,68,0.5))';
+        alert.setAttribute('opacity','1');sky.setAttribute('fill','url(#sky-hot)');
+        sun.setAttribute('opacity','1');btn.innerText='▶ Next';
+    }
+    else if(APP.storyStep===2){
+        txt.innerText="20% raise thermostat: 72° → 76°F.";
+        st.textContent='76°';btn.innerText='▶ Next';
+    }
+    else if(APP.storyStep===3){
+        txt.innerText="Grid stable. Blackout averted.";
+        wire.setAttribute('stroke','#10b981');wire.style.filter='drop-shadow(0 0 5px rgba(16,185,129,0.4))';
+        alert.setAttribute('opacity','0');success.setAttribute('opacity','1');
+        sky.setAttribute('fill','url(#sky-safe)');btn.innerText='↺ Restart';
+    }
+    else{
+        APP.storyStep=-1;
+        dots.forEach(d=>d.className='story-step-dot');
+        txt.innerText="Texas summer peak day. Step through the scenario.";
+        wire.setAttribute('stroke','#94a3b8');wire.style.filter='none';
+        alert.setAttribute('opacity','0');success.setAttribute('opacity','0');
+        sky.setAttribute('fill','url(#sky-grad)');st.textContent='72°';
+        sun.setAttribute('opacity','0.8');btn.innerText='▶ Next';
+    }
+}
+
+/* ═══ METHOD — ICON-HEAVY, MINIMAL TEXT ═══ */
 function getMethodSVG(step){
-    const arrDef=`<defs><marker id="a" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#94a3b8"/></marker></defs>`;
-    const flowLine=(x1,y1,x2,y2,c)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c||'#94a3b8'}" stroke-width="2" marker-end="url(#a)"/>`;
-    const animLine=(x1,y1,x2,y2,c)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c||'#0ea5e9'}" stroke-width="2.5" stroke-dasharray="6 4"><animate attributeName="stroke-dashoffset" values="0;-20" dur="1.5s" repeatCount="indefinite"/></line>`;
-    const box=(x,y,w,h,fill,stroke,lines)=>{
-        let s=`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="12" fill="${fill}" stroke="${stroke}" stroke-width="2"/>`;
-        lines.forEach((l,i)=>{
-            const fs=l.startsWith('★')?'font-weight="800"':'';
-            const txt=l.replace('★','');
-            const sz=l.startsWith('★')?13:11;
-            s+=`<text x="${x+w/2}" y="${y+24+i*18}" text-anchor="middle" font-family="DM Sans" font-size="${sz}" ${fs} fill="${stroke}">${txt}</text>`;
-        });
-        return s;
-    };
+    const AD=`<defs><marker id="a" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#94a3b8"/></marker></defs>`;
+    const arr=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#94a3b8" stroke-width="2" marker-end="url(#a)"/>`;
+    const flow=(x1,y1,x2,y2,c)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c||'#0ea5e9'}" stroke-width="2.5" stroke-dasharray="6 4"><animate attributeName="stroke-dashoffset" values="0;-20" dur="1.5s" repeatCount="indefinite"/></line>`;
 
-    if(step===1) return `<svg viewBox="0 0 700 240">${arrDef}
-        ${box(30,20,110,70,'#fef3c7','#b45309',['★Dallas ☀️','★Houston 🌧️'])}
-        ${box(30,110,110,70,'#dbeafe','#1d4ed8',['★Austin','★San Antonio'])}
-        ${flowLine(145,55,240,100)}${flowLine(145,145,240,120)}
-        ${box(245,70,160,80,'#f0f9ff','#0369a1',['★Weighted Blend','4 city temps','→ 1 composite'])}
-        ${animLine(410,110,480,110)}
-        ${box(485,70,180,80,'#ecfdf5','#047857',['★Training Data','8,760 hourly rows','temp + load + calendar'])}
+    if(step===1) return `<svg viewBox="0 0 720 220">${AD}
+        <rect x="20" y="20" width="90" height="40" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+        <text x="65" y="45" text-anchor="middle" font-family="DM Sans" font-size="11" font-weight="700" fill="#92400e">Dallas ☀️</text>
+        <rect x="20" y="70" width="90" height="40" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="65" y="95" text-anchor="middle" font-family="DM Sans" font-size="11" font-weight="700" fill="#1e40af">Houston 🌧️</text>
+        <rect x="20" y="120" width="90" height="40" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+        <text x="65" y="145" text-anchor="middle" font-family="DM Sans" font-size="10" font-weight="700" fill="#92400e">Austin ☀️</text>
+        <rect x="20" y="170" width="90" height="40" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5"/>
+        <text x="65" y="195" text-anchor="middle" font-family="DM Sans" font-size="10" font-weight="700" fill="#065f46">San Ant. 🌤️</text>
+        ${arr(115,40,195,90)}${arr(115,90,195,100)}${arr(115,140,195,110)}${arr(115,190,195,120)}
+        <rect x="200" y="65" width="140" height="80" rx="14" fill="#f0f9ff" stroke="#0ea5e9" stroke-width="2"/>
+        <text x="270" y="95" text-anchor="middle" font-size="22">⚖️</text>
+        <text x="270" y="118" text-anchor="middle" font-family="DM Sans" font-size="11" font-weight="700" fill="#0369a1">Weighted Blend</text>
+        <text x="270" y="135" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#64748b">→ 1 composite temp</text>
+        ${flow(345,105,415,105)}
+        <rect x="420" y="35" width="120" height="60" rx="10" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+        <text x="480" y="58" text-anchor="middle" font-size="16">🌡️</text>
+        <text x="480" y="80" text-anchor="middle" font-family="DM Sans" font-size="10" font-weight="700" fill="#475569">Weather</text>
+        <text x="540" y="75" text-anchor="middle" font-size="14">+</text>
+        <rect x="420" y="115" width="120" height="60" rx="10" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+        <text x="480" y="138" text-anchor="middle" font-size="16">⚡</text>
+        <text x="480" y="160" text-anchor="middle" font-family="DM Sans" font-size="10" font-weight="700" fill="#475569">ERCOT Load</text>
+        ${arr(545,70,590,90)}${arr(545,145,590,110)}
+        <rect x="595" y="70" width="110" height="70" rx="12" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
+        <text x="650" y="97" text-anchor="middle" font-size="18">📊</text>
+        <text x="650" y="120" text-anchor="middle" font-family="JetBrains Mono" font-size="10" font-weight="700" fill="#065f46">Data</text>
     </svg>`;
 
-    if(step===2) return `<svg viewBox="0 0 700 240">${arrDef}
-        ${box(25,65,120,110,'#f1f5f9','#475569',['★Input Features','Temp, Hour,','Day type,','Holiday…'])}
-        ${flowLine(150,120,220,120)}
-        <rect x="225" y="50" width="150" height="140" rx="16" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5"/>
-        <text x="300" y="90" text-anchor="middle" font-size="30">🤖</text>
-        <text x="300" y="118" text-anchor="middle" font-family="DM Sans" font-size="14" font-weight="800" fill="#1e40af">XGBoost</text>
-        <text x="300" y="140" text-anchor="middle" font-family="JetBrains Mono" font-size="12" fill="#3b82f6">R² = 0.996</text>
-        <text x="300" y="162" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#64748b">99.6% accuracy</text>
-        ${animLine(380,120,445,80,'#2563eb')}${animLine(380,120,445,160,'#10b981')}
-        ${box(450,40,220,60,'#fef3c7','#b45309',['★Baseline Load','Normal thermostat'])}
-        ${box(450,130,220,80,'#ecfdf5','#047857',['★"What If" Loads','+1°F … +4°F raise','10% … 100% adoption'])}
+    if(step===2) return `<svg viewBox="0 0 720 240">${AD}
+        <rect x="15" y="55" width="105" height="100" rx="12" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+        <text x="67" y="88" text-anchor="middle" font-size="18">📊</text>
+        <text x="67" y="110" text-anchor="middle" font-family="DM Sans" font-size="10" font-weight="700" fill="#475569">Temp, Hour,</text>
+        <text x="67" y="124" text-anchor="middle" font-family="DM Sans" font-size="10" font-weight="700" fill="#475569">Day, Holiday</text>
+        ${arr(125,105,190,105)}
+        <rect x="195" y="35" width="150" height="140" rx="18" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5"/>
+        <text x="270" y="75" text-anchor="middle" font-size="32">🤖</text>
+        <text x="270" y="102" text-anchor="middle" font-family="DM Sans" font-size="14" font-weight="900" fill="#1e40af">XGBoost</text>
+        <text x="270" y="122" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#64748b">train on real data</text>
+        <text x="270" y="142" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#64748b">then shift temp input</text>
+        ${flow(350,75,415,45,'#f59e0b')}${flow(350,105,415,105,'#2563eb')}${flow(350,135,415,165,'#10b981')}
+        <rect x="420" y="15" width="285" height="55" rx="10" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+        <text x="440" y="38" font-family="DM Sans" font-size="11" font-weight="700" fill="#92400e">Baseline (72°F)</text>
+        <polyline points="540,50 555,48 570,35 585,22 600,25 615,30 630,38 645,42 660,48 675,50 690,50" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
+        <rect x="420" y="78" width="285" height="55" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+        <text x="440" y="101" font-family="DM Sans" font-size="11" font-weight="700" fill="#1e40af">+2°F (74°F)</text>
+        <polyline points="540,113 555,111 570,101 585,92 600,94 615,98 630,104 645,108 660,112 675,113 690,113" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round"/>
+        <rect x="420" y="141" width="285" height="55" rx="10" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
+        <text x="440" y="164" font-family="DM Sans" font-size="11" font-weight="700" fill="#065f46">+4°F (76°F)</text>
+        <polyline points="540,176 555,174 570,168 585,162 600,163 615,166 630,170 645,173 660,175 675,176 690,176" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="588" y1="25" x2="588" y2="160" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3 2"/>
+        <text x="597" y="95" font-family="DM Sans" font-size="9" fill="#64748b" font-weight="700">peak</text>
+        <text x="597" y="105" font-family="DM Sans" font-size="9" fill="#64748b" font-weight="700">drops</text>
+        <path d="M605,108 L605,148" stroke="#10b981" stroke-width="1.5" marker-end="url(#a)"/>
+        <text x="540" y="218" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#94a3b8">× participation rate (10%–100%)</text>
     </svg>`;
 
-    if(step===3) return `<svg viewBox="0 0 700 240">${arrDef}
-        ${box(25,40,130,65,'#fef3c7','#b45309',['★Baseline'])}
-        ${box(25,125,130,65,'#ecfdf5','#047857',['★Reduced Load'])}
-        ${flowLine(160,72,235,105)}${flowLine(160,157,235,130)}
-        <rect x="240" y="60" width="170" height="120" rx="16" fill="#fef2f2" stroke="#dc2626" stroke-width="2.5"/>
-        <text x="325" y="100" text-anchor="middle" font-size="28">🎲</text>
-        <text x="325" y="125" text-anchor="middle" font-family="DM Sans" font-size="13" font-weight="800" fill="#b91c1c">Outage Simulator</text>
-        <text x="325" y="148" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#64748b">Generator failures</text>
-        <text x="325" y="164" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#64748b">vs. demand, hourly</text>
-        ${animLine(415,120,475,120,'#dc2626')}
-        ${box(480,60,190,120,'#eff6ff','#1d4ed8',['★Blackout Risk','(LOLE)','','Target: ≤ 0.1','days/year'])}
+    if(step===3) return `<svg viewBox="0 0 720 230">${AD}
+        <!-- Input load curves with mini sparklines -->
+        <rect x="15" y="18" width="135" height="80" rx="12" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+        <text x="35" y="42" font-family="DM Sans" font-size="11" font-weight="700" fill="#92400e">Baseline Load</text>
+        <polyline points="30,75 45,72 60,60 75,48 85,50 95,55 105,62 115,68 125,73 135,75" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
+        <text x="82" y="90" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#b45309">high peak</text>
+
+        <rect x="15" y="115" width="135" height="80" rx="12" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
+        <text x="35" y="139" font-family="DM Sans" font-size="11" font-weight="700" fill="#065f46">Reduced Load</text>
+        <polyline points="30,172 45,170 60,163 75,156 85,157 95,160 105,164 115,168 125,171 135,172" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+        <text x="82" y="187" text-anchor="middle" font-family="DM Sans" font-size="8" fill="#047857">lower peak</text>
+
+        ${arr(155,58,210,80)}${arr(155,155,210,130)}
+
+        <!-- Reliability Test - reframed -->
+        <rect x="215" y="30" width="195" height="175" rx="18" fill="white" stroke="#dc2626" stroke-width="2.5"/>
+        <rect x="215" y="30" width="195" height="175" rx="18" fill="#fef2f2" opacity="0.4"/>
+        <text x="312" y="58" text-anchor="middle" font-family="DM Sans" font-size="13" font-weight="900" fill="#b91c1c">Grid Stress Test</text>
+        <text x="312" y="73" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#64748b">"Can supply meet demand?"</text>
+
+        <!-- Visual: supply side (generators, one broken) -->
+        <rect x="232" y="84" width="75" height="50" rx="8" fill="#fff7ed" stroke="#f59e0b" stroke-width="1"/>
+        <text x="269" y="100" text-anchor="middle" font-family="DM Sans" font-size="8" font-weight="700" fill="#92400e">Supply</text>
+        <text x="247" y="124" font-size="14">🏭</text><text x="265" y="124" font-size="14">🏭</text><text x="283" y="124" font-size="14">💥</text>
+        <text x="269" y="132" text-anchor="middle" font-family="DM Sans" font-size="7" fill="#b45309"></text>
+
+        <!-- vs -->
+        <text x="312" y="115" text-anchor="middle" font-family="DM Sans" font-size="11" font-weight="900" fill="#64748b">vs</text>
+
+        <!-- Visual: demand side -->
+        <rect x="322" y="84" width="75" height="50" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1"/>
+        <text x="359" y="100" text-anchor="middle" font-family="DM Sans" font-size="8" font-weight="700" fill="#1e40af">Demand</text>
+        <text x="339" y="124" font-size="14">🏠</text><text x="357" y="124" font-size="14">🏠</text><text x="375" y="124" font-size="14">🏠</text>
+
+        <!-- Explanation -->
+        <text x="312" y="155" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#64748b">Plants break randomly.</text>
+        <text x="312" y="168" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#64748b">Test every hour × full year.</text>
+        <text x="312" y="181" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#dc2626" font-weight="700">Supply &lt; Demand = blackout risk</text>
+
+        ${flow(415,115,465,115,'#dc2626')}
+
+        <!-- Results: comparison bars -->
+        <rect x="470" y="25" width="235" height="185" rx="14" fill="white" stroke="#1d4ed8" stroke-width="2"/>
+        <rect x="470" y="25" width="235" height="185" rx="14" fill="#eff6ff" opacity="0.4"/>
+        <text x="587" y="52" text-anchor="middle" font-family="DM Sans" font-size="13" font-weight="800" fill="#1e40af">Blackout Risk</text>
+        <text x="587" y="68" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#64748b">days of shortage per year</text>
+
+        <text x="510" y="100" font-family="DM Sans" font-size="9" font-weight="700" fill="#92400e">Baseline</text>
+        <rect x="560" y="88" width="120" height="16" rx="4" fill="#fef3c7" stroke="#f59e0b" stroke-width="1"/>
+        <rect x="560" y="88" width="120" height="16" rx="4" fill="#f59e0b" opacity="0.3"/>
+        <text x="625" y="100" text-anchor="middle" font-family="JetBrains Mono" font-size="9" font-weight="700" fill="#92400e">higher risk</text>
+
+        <text x="510" y="128" font-family="DM Sans" font-size="9" font-weight="700" fill="#065f46">Reduced</text>
+        <rect x="560" y="116" width="60" height="16" rx="4" fill="#ecfdf5" stroke="#10b981" stroke-width="1"/>
+        <rect x="560" y="116" width="60" height="16" rx="4" fill="#10b981" opacity="0.3"/>
+        <text x="593" y="128" text-anchor="middle" font-family="JetBrains Mono" font-size="9" font-weight="700" fill="#065f46">lower ✓</text>
+
+        <line x1="560" y1="148" x2="680" y2="148" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <text x="560" y="162" font-family="JetBrains Mono" font-size="10" font-weight="700" fill="#dc2626">Target ≤ 0.1 d/yr</text>
+
+        <path d="M640,96 L640,124" stroke="#64748b" stroke-width="1.2"/>
+        <text x="650" y="114" font-family="DM Sans" font-size="9" font-weight="700" fill="#10b981">Δ gap</text>
+        <text x="650" y="124" font-family="DM Sans" font-size="8" fill="#10b981">= value</text>
     </svg>`;
 
-    if(step===4) return `<svg viewBox="0 0 700 240">
-        ${box(30,15,290,100,'#ecfdf5','#047857',['★⚡ Grid Capacity Gained','+4°F at 20% adoption','= adding firm power plant','(ELCC value)'])}
-        ${box(30,130,290,100,'#eff6ff','#1d4ed8',['★🌱 CO₂ Avoided','Less peak generation','→ fewer dirty plants run','(marginal emissions)'])}
-        ${box(380,15,290,100,'#fef3c7','#b45309',['★🔑 Key Finding','Summer cooling DR → high value','Winter heating DR → zero capacity','(ERCOT peaks in summer)'])}
-        ${box(380,130,290,100,'#f5f3ff','#7c3aed',['★🎯 Bottom Line','Small thermostat change','+ modest adoption','= big grid + climate win'])}
+    if(step===4) return `<svg viewBox="0 0 720 220">
+        <text x="360" y="28" text-anchor="middle" font-family="DM Sans" font-size="15" font-weight="900" fill="#475569">Proposed Study Will Quantify:</text>
+
+        <rect x="20" y="45" width="330" height="75" rx="14" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
+        <text x="45" y="78" font-size="24">⚡</text>
+        <text x="80" y="75" font-family="DM Sans" font-size="13" font-weight="800" fill="#065f46">How much grid capacity gained?</text>
+        <text x="80" y="95" font-family="DM Sans" font-size="11" fill="#047857">setpoint widening → firm capacity value</text>
+
+        <rect x="20" y="135" width="330" height="75" rx="14" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+        <text x="45" y="168" font-size="24">🌱</text>
+        <text x="80" y="165" font-family="DM Sans" font-size="13" font-weight="800" fill="#1e40af">How much CO₂ avoided?</text>
+        <text x="80" y="185" font-family="DM Sans" font-size="11" fill="#2563eb">marginal emissions from reduced peak</text>
+
+        <rect x="375" y="45" width="325" height="75" rx="14" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+        <text x="400" y="78" font-size="24">☀️❄️</text>
+        <text x="445" y="75" font-family="DM Sans" font-size="13" font-weight="800" fill="#92400e">Summer vs. Winter DR value?</text>
+        <text x="445" y="95" font-family="DM Sans" font-size="11" fill="#b45309">cooling vs. heating demand response</text>
+
+        <rect x="375" y="135" width="325" height="75" rx="14" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="2"/>
+        <text x="400" y="168" font-size="24">📐</text>
+        <text x="445" y="165" font-family="DM Sans" font-size="13" font-weight="800" fill="#5b21b6">What adoption level matters?</text>
+        <text x="445" y="185" font-family="DM Sans" font-size="11" fill="#6d28d9">participation % vs. setpoint °F tradeoff</text>
     </svg>`;
 }
 
 function nextMethodStep(){
     APP.methodStep++;
     const fill=document.getElementById('pipe-fill'),display=document.getElementById('method-stage'),btn=document.getElementById('method-btn');
-    const labels=['Data','Predict','Risk','Results'];
     if(APP.methodStep>4){
         APP.methodStep=0;fill.style.width='0%';
-        document.querySelectorAll('.pipe-node').forEach(n=>{n.classList.remove('active','done');});
-        display.innerHTML=`<div class="method-content"><svg viewBox="0 0 700 260"><text x="350" y="130" text-anchor="middle" font-family="DM Sans" font-size="18" fill="#94a3b8" font-weight="700">Done — click to restart</text></svg></div>`;
-        btn.innerHTML='▶ Step 1: Data';return;
+        document.querySelectorAll('.pipe-node').forEach(n=>n.classList.remove('active','done'));
+        display.innerHTML=`<div class="method-content"><svg viewBox="0 0 700 260"><text x="350" y="130" text-anchor="middle" font-family="DM Sans" font-size="17" fill="#94a3b8" font-weight="700">Done — click to restart</text></svg></div>`;
+        btn.innerHTML='▶ Next';return;
     }
-    for(let i=1;i<APP.methodStep;i++){const p=document.getElementById(`node-${i}`);p.classList.remove('active');p.classList.add('done');}
+    for(let i=1;i<APP.methodStep;i++){document.getElementById(`node-${i}`).classList.remove('active');document.getElementById(`node-${i}`).classList.add('done');}
     document.getElementById(`node-${APP.methodStep}`).classList.add('active');
     fill.style.width=((APP.methodStep-1)/3*100)+'%';
-    btn.innerHTML=APP.methodStep<4?`▶ Step ${APP.methodStep+1}: ${labels[APP.methodStep]}`:'↺ Reset';
+    btn.innerHTML=APP.methodStep===4?'↺ Reset':'▶ Next';
     display.innerHTML=`<div class="method-content">${getMethodSVG(APP.methodStep)}</div>`;
-}
-
-/* ═══ STORY ═══ */
-function runStory(){
-    if(APP.storyRunning)return;APP.storyRunning=true;
-    const btn=document.getElementById('story-play-btn'),txt=document.getElementById('story-msg');
-    const wire=document.getElementById('story-wire'),alert=document.getElementById('story-alert');
-    const success=document.getElementById('story-success'),el=document.getElementById('story-electron'),st=document.getElementById('story-temp');
-    const dots=[0,1,2,3].map(i=>document.getElementById(`sdot-${i}`));
-    btn.style.display='none';dots.forEach(d=>d.className='story-step-dot');
-    alert.setAttribute('opacity','0');success.setAttribute('opacity','0');el.setAttribute('opacity','0.8');
-    dots[0].classList.add('current');txt.innerText="105°F — every AC maxed out.";wire.setAttribute('stroke','#94a3b8');wire.style.filter='none';
-    setTimeout(()=>{dots[0].className='story-step-dot done';dots[1].classList.add('current');txt.innerText="Demand exceeds supply. Blackouts loom.";wire.setAttribute('stroke','#ef4444');wire.style.filter='drop-shadow(0 0 6px rgba(239,68,68,0.5))';alert.setAttribute('opacity','1');},3500);
-    setTimeout(()=>{dots[1].className='story-step-dot done';dots[2].classList.add('current');txt.innerText="20% raise thermostat: 72° → 76°F.";st.textContent='76°';},7000);
-    setTimeout(()=>{dots[2].className='story-step-dot done';dots[3].classList.add('current');txt.innerText="Grid stable. Blackout averted.";wire.setAttribute('stroke','#10b981');wire.style.filter='drop-shadow(0 0 5px rgba(16,185,129,0.4))';alert.setAttribute('opacity','0');success.setAttribute('opacity','1');},10500);
-    setTimeout(()=>{dots[3].className='story-step-dot done';btn.style.display='block';btn.innerText='↺ Replay';st.textContent='72°';APP.storyRunning=false;},14000);
 }
 
 /* ═══ DATA ═══ */
@@ -451,14 +533,14 @@ function setWeather(mode){
         da.className='city-dot hot';da.textContent='☀️';ds.className='city-dot cool';ds.textContent='🌤️';
         th.className='city-temp cool';th.textContent='88°F';
         s.textContent='BALANCED';s.style.color='var(--safe)';ic.textContent='⚖️';ic.style.animation='float 3s ease infinite';
-        d.textContent="Houston rain offsets Dallas heat → accurate composite load.";
+        d.textContent="Houston rain offsets Dallas heat → accurate load.";
         bD.classList.add('active');bU.classList.remove('active');
     }else{
         dd.className='city-dot hot';dd.textContent='☀️';dh.className='city-dot hot';dh.textContent='☀️';
         da.className='city-dot hot';da.textContent='☀️';ds.className='city-dot hot';ds.textContent='☀️';
         th.className='city-temp hot';th.textContent='103°F';
         s.textContent='OVERLOAD';s.style.color='var(--danger)';ic.textContent='⚠️';ic.style.animation='pulse 0.8s infinite';
-        d.textContent="Uniform temp exaggerates peak → overstates risk.";
+        d.textContent="Same temp everywhere → exaggerates peak risk.";
         bU.classList.add('active');bD.classList.remove('active');
     }
 }
@@ -476,21 +558,17 @@ function setLabSeason(s){
 }
 
 function updateLab(){
-    const temp=parseInt(document.getElementById('temp-slider').value);
-    const part=parseInt(document.getElementById('part-slider').value);
+    const temp=parseInt(document.getElementById('temp-slider').value),part=parseInt(document.getElementById('part-slider').value);
     APP.temp=temp;APP.part=part;
     document.getElementById('wall-temp').textContent=temp;
     document.getElementById('slider-val').textContent=temp+'°F';
     document.getElementById('part-display').textContent=part+'%';
     const p=part/100;
-    updateGridNodes('grid-dal',8,p);updateGridNodes('grid-hou',8,p);
-    updateGridNodes('grid-aus',4,p);updateGridNodes('grid-sa',4,p);
+    updateGridNodes('grid-dal',8,p);updateGridNodes('grid-hou',8,p);updateGridNodes('grid-aus',4,p);updateGridNodes('grid-sa',4,p);
 
-    // Avatar
     const shirt=document.getElementById('c-shirt'),jacket=document.getElementById('c-jacket');
     const sweat=document.getElementById('sweat'),shiver=document.getElementById('shiver');
-    const mouth=document.getElementById('mouth'),ac=document.getElementById('ac-lines');
-    const hg=document.getElementById('heater-glow');
+    const mouth=document.getElementById('mouth'),ac=document.getElementById('ac-lines'),hg=document.getElementById('heater-glow');
     shirt.style.display='block';jacket.style.display='none';sweat.style.display='none';shiver.style.display='none';
     hg.setAttribute('stroke','transparent');hg.setAttribute('opacity','0');
 
@@ -499,26 +577,24 @@ function updateLab(){
         if(temp<=68){jacket.style.display='block';shirt.style.display='none';mouth.setAttribute('d','M-6,-134 Q0,-129 6,-134');}
         else if(temp>=76){mouth.setAttribute('d','M-6,-134 Q0,-129 6,-134');hg.setAttribute('stroke','#ef4444');hg.setAttribute('fill','rgba(239,68,68,0.08)');hg.setAttribute('opacity','1');}
         else{mouth.setAttribute('d','M-6,-133 Q0,-133 6,-133');}
-        if(temp<=66){shiver.style.display='block';}
+        if(temp<=66) shiver.style.display='block';
     }else{
         hg.setAttribute('opacity','0');
         if(temp>=78){sweat.style.display='block';mouth.setAttribute('d','M-6,-132 Q0,-135 6,-132');}
-        else if(temp>=74){mouth.setAttribute('d','M-6,-133 Q0,-133 6,-133');}
-        else{mouth.setAttribute('d','M-6,-134 Q0,-129 6,-134');}
+        else if(temp>=74) mouth.setAttribute('d','M-6,-133 Q0,-133 6,-133');
+        else mouth.setAttribute('d','M-6,-134 Q0,-129 6,-134');
         ac.setAttribute('opacity',temp<=74?'1':'0.4');
     }
 
-    // Load calculation
     let userLoad=0,note='';
     if(APP.season==='summer'){
         userLoad=(80-temp)*8;
-        note='Summer: cooling drives peak. Raise setpoint → less load → grid relief + CO₂ cut.';
+        note='Summer: raise setpoint → less load → grid relief + CO₂ cut.';
     }else{
-        // Winter: cranking heat UP = more load
         userLoad=(temp-60)*6;
-        if(temp>=76) note='Winter: heater cranked high → heavy load + high CO₂.';
-        else if(temp>=71) note='Winter: moderate heating. Grid OK but still burning gas → CO₂.';
-        else note='Winter: low heat demand. Grid stable, minimal emissions.';
+        if(temp>=76) note='Winter: heater maxed → heavy load + high CO₂.';
+        else if(temp>=71) note='Winter: moderate heating. Grid OK, still burning gas.';
+        else note='Winter: low heat. Grid stable, minimal emissions.';
     }
 
     let totalLoad=userLoad*(1-part*0.008);
@@ -536,18 +612,15 @@ function updateLab(){
     if(sumStress||winStress){
         wire.setAttribute('class','wire stressed');spark.classList.add('active');
         stat.textContent='⚠ CRITICAL';stat.className='lab-status-bar danger';
-        gD.style.background='var(--danger)';gD.style.boxShadow='0 0 8px var(--danger-glow)';
-        gS.textContent='STRESSED';gS.style.color='var(--danger)';
+        gD.style.background='var(--danger)';gD.style.boxShadow='0 0 8px var(--danger-glow)';gS.textContent='STRESSED';gS.style.color='var(--danger)';
     }else if(winWarn){
         wire.setAttribute('class','wire warn');spark.classList.remove('active');
         stat.textContent='⚡ HIGH LOAD';stat.className='lab-status-bar warn';
-        gD.style.background='var(--warn)';gD.style.boxShadow='0 0 8px var(--warn-glow)';
-        gS.textContent='HIGH LOAD';gS.style.color='var(--warn)';
+        gD.style.background='var(--warn)';gD.style.boxShadow='0 0 8px var(--warn-glow)';gS.textContent='HIGH LOAD';gS.style.color='var(--warn)';
     }else{
         wire.setAttribute('class','wire safe');spark.classList.remove('active');
         stat.textContent='✓ STABLE';stat.className='lab-status-bar safe';
-        gD.style.background='var(--safe)';gD.style.boxShadow='0 0 8px var(--safe-glow)';
-        gS.textContent='STABLE';gS.style.color='var(--safe)';
+        gD.style.background='var(--safe)';gD.style.boxShadow='0 0 8px var(--safe-glow)';gS.textContent='STABLE';gS.style.color='var(--safe)';
     }
     document.getElementById('research-note').innerText=note;
 }
