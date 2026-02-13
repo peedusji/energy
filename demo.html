@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhD Digital Twin — ERCOT Research</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sky-summer: linear-gradient(170deg, #43CEA2 0%, #185a9d 100%);
+            --sky-winter: linear-gradient(170deg, #8e9eab 0%, #485563 100%);
+            --panel: rgba(255, 255, 255, 0.92);
+            --panel-glass: rgba(255, 255, 255, 0.7);
+            --primary: #1a2332;
+            --accent: #0ea5e9;
+            --accent-glow: rgba(14, 165, 233, 0.25);
+            --danger: #ef4444;
+            --danger-glow: rgba(239, 68, 68, 0.2);
+            --safe: #10b981;
+            --safe-glow: rgba(16, 185, 129, 0.2);
+            --warn: #f59e0b;
+            --warn-glow: rgba(245, 158, 11, 0.2);
+            --wire-neutral: #94a3b8;
+            --border: rgba(0,0,0,0.06);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow-md: 0 8px 30px rgba(0,0,0,0.08);
+            --shadow-lg: 0 20px 60px rgba(0,0,0,0.12);
+            --shadow-xl: 0 30px 80px rgba(0,0,0,0.18);
+            --radius: 16px; --radius-sm: 10px; --radius-xs: 6px;
+        }
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'DM Sans',sans-serif;height:100vh;background:var(--sky-summer);overflow:hidden;display:flex;flex-direction:column;transition:background 1.2s;user-select:none;color:var(--primary);}
+        body.winter-mode{background:var(--sky-winter);}
+        .nav-bar{background:rgba(255,255,255,0.96);backdrop-filter:blur(20px);padding:0 28px;height:60px;box-shadow:0 1px 0 var(--border),var(--shadow-sm);display:flex;justify-content:space-between;align-items:center;z-index:2000;}
+        .brand{font-size:1.15rem;font-weight:900;display:flex;align-items:center;gap:10px;letter-spacing:-0.02em;}
+        .brand-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),#6366f1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;box-shadow:0 2px 8px rgba(14,165,233,0.3);}
+        .badge{background:linear-gradient(135deg,var(--accent),#6366f1);color:white;padding:3px 8px;border-radius:5px;font-size:0.6rem;font-weight:700;letter-spacing:1.5px;}
+        .tabs{display:flex;gap:2px;background:#f1f5f9;padding:4px;border-radius:12px;}
+        .tab-btn{border:none;background:transparent;padding:8px 18px;font-weight:700;font-size:0.8rem;color:#94a3b8;cursor:pointer;border-radius:9px;transition:all 0.25s;font-family:inherit;white-space:nowrap;}
+        .tab-btn:hover{color:#64748b;}
+        .tab-btn.active{background:white;color:var(--accent);box-shadow:0 1px 4px rgba(0,0,0,0.08);}
+        .global-status{display:flex;align-items:center;gap:8px;font-size:0.85rem;font-weight:700;}
+        .status-dot{width:8px;height:8px;border-radius:50%;background:var(--safe);box-shadow:0 0 8px var(--safe-glow);animation:pulse-dot 2s infinite;}
+        @keyframes pulse-dot{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.4);opacity:0.7;}}
+        .stage{flex:1;position:relative;width:100%;height:100%;}
+        .view-panel{position:absolute;top:0;left:0;right:0;bottom:0;padding:24px;opacity:0;pointer-events:none;transform:translateY(8px);transition:all 0.4s cubic-bezier(0.4,0,0.2,1);display:flex;justify-content:center;align-items:center;z-index:10;}
+        .view-panel.active{opacity:1;pointer-events:auto;transform:translateY(0);z-index:20;}
+
+        /* ═══ STORY ═══ */
+        .story-container{width:min(960px,95%);height:min(560px,85%);background:white;border-radius:20px;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow-xl);}
+        .story-screen{flex:1;background:linear-gradient(180deg,#e0f2fe 0%,#f0f9ff 50%,#ecfdf5 100%);position:relative;overflow:hidden;}
+        .story-screen svg{width:100%;height:100%;}
+        .story-bar{padding:18px 32px;background:white;border-top:1px solid #f1f5f9;display:flex;align-items:center;gap:20px;min-height:70px;}
+        .story-text{flex:1;font-size:0.95rem;color:#475569;line-height:1.5;}
+        .btn-play{padding:10px 28px;background:linear-gradient(135deg,var(--accent),#6366f1);color:white;border:none;border-radius:10px;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.2s;box-shadow:0 4px 14px rgba(14,165,233,0.35);white-space:nowrap;}
+        .btn-play:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(14,165,233,0.4);}
+        .story-steps{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:6px;}
+        .story-step-dot{width:28px;height:4px;border-radius:2px;background:rgba(0,0,0,0.1);transition:all 0.4s;}
+        .story-step-dot.done{background:var(--safe);}
+        .story-step-dot.current{background:var(--accent);width:44px;}
+
+        /* ═══ DATA ═══ */
+        .data-layout{display:grid;grid-template-columns:1.3fr 1fr;gap:24px;width:min(1100px,95%);height:min(560px,85%);}
+        .data-card{background:var(--panel);backdrop-filter:blur(20px);border-radius:20px;padding:28px;box-shadow:var(--shadow-lg);display:flex;flex-direction:column;border:1px solid var(--border);position:relative;overflow:hidden;}
+        .data-card h3{font-size:1rem;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+        .map-area{flex:1;background:linear-gradient(135deg,#f0fdf4 0%,#ecfeff 50%,#eff6ff 100%);border-radius:14px;position:relative;overflow:hidden;border:1px solid rgba(0,0,0,0.04);}
+        .texas-outline{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:80%;height:80%;opacity:0.06;}
+        .city-marker{position:absolute;display:flex;flex-direction:column;align-items:center;gap:4px;transition:all 0.5s;}
+        .city-dot{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:all 0.5s;position:relative;}
+        .city-dot.hot{background:rgba(239,68,68,0.15);box-shadow:0 0 20px rgba(239,68,68,0.2);}
+        .city-dot.cool{background:rgba(14,165,233,0.15);box-shadow:0 0 20px rgba(14,165,233,0.15);}
+        .city-dot::after{content:'';position:absolute;width:8px;height:8px;border-radius:50%;bottom:-2px;right:-2px;}
+        .city-dot.hot::after{background:var(--danger);}
+        .city-dot.cool::after{background:var(--accent);}
+        .city-name{font-size:0.7rem;font-weight:700;color:#475569;background:rgba(255,255,255,0.9);padding:2px 8px;border-radius:4px;}
+        .city-temp{font-family:'JetBrains Mono',monospace;font-size:0.65rem;font-weight:700;}
+        .city-temp.hot{color:var(--danger);}.city-temp.cool{color:var(--accent);}
+        .weather-toggle{display:flex;gap:6px;background:#f1f5f9;padding:4px;border-radius:10px;margin-bottom:20px;}
+        .weather-toggle button{flex:1;padding:10px 14px;border:none;background:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:0.8rem;color:#94a3b8;font-family:inherit;transition:0.2s;}
+        .weather-toggle button.active{background:white;color:var(--primary);box-shadow:var(--shadow-sm);}
+        .balance-indicator{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px;}
+        .balance-icon{font-size:3.5rem;transition:all 0.5s;}
+        .balance-label{font-size:1.8rem;font-weight:900;transition:color 0.5s;}
+        .balance-desc{font-size:0.85rem;color:#64748b;max-width:260px;line-height:1.5;}
+
+        /* ═══ LAB ═══ */
+        .lab-layout{display:grid;grid-template-columns:280px 1fr 260px;gap:16px;width:min(1200px,98%);height:min(600px,90%);}
+        .lab-panel{background:var(--panel);backdrop-filter:blur(20px);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow-lg);border:1px solid var(--border);display:flex;flex-direction:column;z-index:100;overflow:hidden;}
+        .lab-panel h3{font-size:0.85rem;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+        .part-big{font-family:'JetBrains Mono',monospace;font-size:2.8rem;font-weight:700;background:linear-gradient(135deg,var(--accent),#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;line-height:1;}
+        .part-sub{text-align:center;font-size:0.72rem;color:#94a3b8;font-weight:500;margin-bottom:16px;}
+        .city-section{margin-bottom:10px;}
+        .city-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+        .city-label{font-size:0.7rem;font-weight:700;color:#64748b;}
+        .city-weight{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:#94a3b8;}
+        .comm-grid{display:flex;gap:3px;flex-wrap:wrap;}
+        .house-block{width:14px;height:14px;background:#e2e8f0;border-radius:3px;transition:all 0.35s cubic-bezier(0.4,0,0.2,1);}
+        .house-block.active{background:var(--safe);box-shadow:0 0 6px var(--safe-glow);transform:scale(1.08);}
+        .slider-group{margin-top:auto;padding-top:16px;border-top:1px solid #f1f5f9;}
+        .slider-label{font-size:0.75rem;font-weight:700;color:var(--primary);margin-bottom:6px;display:block;}
+        input[type=range]{-webkit-appearance:none;width:100%;height:6px;border-radius:3px;background:#e2e8f0;outline:none;cursor:pointer;position:relative;z-index:1000;}
+        input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:white;border:3px solid var(--accent);box-shadow:0 2px 8px rgba(0,0,0,0.15);cursor:pointer;}
+        .season-sw{display:flex;background:#f1f5f9;padding:3px;border-radius:10px;margin-bottom:12px;}
+        .season-btn{flex:1;padding:8px;border:none;background:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:0.78rem;color:#94a3b8;transition:0.25s;font-family:inherit;}
+        .season-btn.active{background:white;color:var(--primary);box-shadow:var(--shadow-sm);}
+        .room-viz{position:relative;flex:1;}
+        .room-viz svg{width:100%;height:100%;}
+        .thermostat-control{background:white;padding:14px 18px;border-radius:12px;border:1px solid var(--border);box-shadow:var(--shadow-sm);}
+        .thermo-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+        .thermo-label{font-size:0.78rem;font-weight:700;}
+        .thermo-val{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:700;color:var(--accent);}
+        .grid-viz{flex:1;position:relative;background:linear-gradient(180deg,#f8fafc 0%,#f1f5f9 100%);border-radius:var(--radius-sm);overflow:hidden;margin:8px 0;}
+        #smoke-container{position:absolute;width:100%;height:100%;pointer-events:none;}
+        .grid-viz svg{position:absolute;bottom:0;width:100%;height:100%;}
+        .wire{fill:none;stroke:var(--wire-neutral);stroke-width:3.5;transition:stroke 0.4s,filter 0.4s;stroke-linecap:round;}
+        .wire.stressed{stroke:var(--danger);filter:drop-shadow(0 0 6px rgba(239,68,68,0.4));animation:vibrate 0.06s infinite;}
+        .wire.safe{stroke:var(--safe);filter:drop-shadow(0 0 4px rgba(16,185,129,0.3));}
+        .wire.warn{stroke:var(--warn);filter:drop-shadow(0 0 4px rgba(245,158,11,0.3));}
+        .electron{fill:#fbbf24;opacity:0;}.electron.moving{opacity:1;}
+        .spark{fill:none;stroke:#fbbf24;stroke-width:2;opacity:0;}
+        .spark.active{animation:spark-burst 0.4s infinite;opacity:1;}
+        @keyframes vibrate{0%{transform:translate(0,0);}25%{transform:translate(1.5px,1.5px);}75%{transform:translate(-1.5px,-1.5px);}100%{transform:translate(0,0);}}
+        @keyframes spark-burst{0%{transform:scale(0);opacity:1;}100%{transform:scale(2.5);opacity:0;}}
+        .research-note{font-size:0.72rem;color:#64748b;padding:10px 12px;background:#f8fafc;border-radius:var(--radius-xs);border-left:3px solid var(--accent);line-height:1.5;margin-bottom:8px;}
+        .lab-status-bar{text-align:center;padding:10px;border-radius:var(--radius-sm);font-size:1rem;font-weight:900;letter-spacing:1px;transition:all 0.4s;}
+        .lab-status-bar.safe{background:rgba(16,185,129,0.08);color:var(--safe);}
+        .lab-status-bar.danger{background:rgba(239,68,68,0.08);color:var(--danger);}
+        .lab-status-bar.warn{background:rgba(245,158,11,0.08);color:var(--warn);}
+        .smoke{position:absolute;border-radius:50%;animation:smoke-rise 3s linear forwards;opacity:0;pointer-events:none;}
+        @keyframes smoke-rise{0%{transform:scale(0.4) translate(0,0);opacity:0.5;}100%{transform:scale(3.5) translate(-30px,-160px);opacity:0;}}
+        .snowflake{position:absolute;background:white;border-radius:50%;opacity:0.7;pointer-events:none;animation:snowfall linear infinite;z-index:50;}
+        @keyframes snowfall{to{transform:translateY(600px) rotate(360deg);}}
+        #frost-vignette{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;background:radial-gradient(circle,transparent 60%,rgba(255,255,255,0.6) 100%);display:none;z-index:5;}
+
+        /* ═══ METHOD ═══ */
+        .method-container{display:flex;flex-direction:column;width:min(1060px,96%);height:min(600px,90%);background:white;border-radius:20px;padding:32px 36px;box-shadow:var(--shadow-xl);align-items:center;position:relative;overflow:hidden;}
+        .method-container::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--accent),#6366f1,#a855f7);}
+        .method-header{text-align:center;margin-bottom:4px;}
+        .method-header h2{font-size:1.3rem;font-weight:900;}
+        .pipeline-track{display:flex;justify-content:space-between;width:100%;margin-top:24px;position:relative;padding:0 30px;}
+        .pipeline-line{position:absolute;top:42px;left:80px;right:80px;height:3px;background:#e2e8f0;z-index:0;border-radius:2px;}
+        .pipeline-fill{position:absolute;top:42px;left:80px;height:3px;background:linear-gradient(90deg,var(--accent),#6366f1);z-index:1;width:0%;transition:width 0.8s cubic-bezier(0.4,0,0.2,1);border-radius:2px;}
+        .pipe-node{width:84px;height:84px;background:white;border:3px solid #e2e8f0;border-radius:50%;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:2;position:relative;transition:all 0.5s cubic-bezier(0.4,0,0.2,1);}
+        .pipe-node.active{border-color:var(--accent);background:linear-gradient(135deg,#f0f9ff,#ecfeff);transform:scale(1.12);box-shadow:0 0 0 6px var(--accent-glow),var(--shadow-md);}
+        .pipe-node.done{border-color:var(--safe);background:linear-gradient(135deg,#f0fdf4,#ecfdf5);box-shadow:0 0 0 4px var(--safe-glow);}
+        .pipe-icon{font-size:1.6rem;}
+        .pipe-label{position:absolute;bottom:-28px;font-weight:700;font-size:0.7rem;width:100px;text-align:center;color:#94a3b8;transition:color 0.3s;}
+        .pipe-node.active .pipe-label,.pipe-node.done .pipe-label{color:var(--primary);}
+        .method-display{flex:1;width:100%;background:#f8fafc;margin-top:44px;border-radius:14px;display:flex;justify-content:center;align-items:center;border:1px solid #e2e8f0;position:relative;overflow:hidden;}
+        .method-content{width:100%;height:100%;display:flex;align-items:center;justify-content:center;animation:fadeInUp 0.45s ease;}
+        @keyframes fadeInUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+        .step-btn{margin-top:16px;padding:12px 40px;background:linear-gradient(135deg,var(--safe),#059669);color:white;border:none;border-radius:12px;font-size:0.95rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.2s;box-shadow:0 4px 14px rgba(16,185,129,0.3);}
+        .step-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(16,185,129,0.4);}
+        @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
+        @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+    </style>
+</head>
+<body>
+    <div class="nav-bar">
+        <div class="brand"><div class="brand-icon">⚡</div>Research Digital Twin<span class="badge">ERCOT</span></div>
+        <div class="tabs">
+            <button class="tab-btn" onclick="setTab('story',this)">1. Story</button>
+            <button class="tab-btn" onclick="setTab('data',this)">2. Data</button>
+            <button class="tab-btn" onclick="setTab('lab',this)">3. Lab</button>
+            <button class="tab-btn active" onclick="setTab('method',this)">4. Method</button>
+        </div>
+        <div class="global-status"><div class="status-dot" id="global-dot"></div><span id="global-status">STABLE</span></div>
+    </div>
+
+    <div class="stage">
+        <div id="frost-vignette"></div>
+
+        <!-- METHOD -->
+        <div id="view-method" class="view-panel active">
+            <div class="method-container">
+                <div class="method-header"><h2>Research Pipeline</h2></div>
+                <div class="pipeline-track">
+                    <div class="pipeline-line"></div>
+                    <div class="pipeline-fill" id="pipe-fill"></div>
+                    <div class="pipe-node" id="node-1"><div class="pipe-icon">📊</div><div class="pipe-label">Data</div></div>
+                    <div class="pipe-node" id="node-2"><div class="pipe-icon">🤖</div><div class="pipe-label">Predict</div></div>
+                    <div class="pipe-node" id="node-3"><div class="pipe-icon">🎲</div><div class="pipe-label">Risk</div></div>
+                    <div class="pipe-node" id="node-4"><div class="pipe-icon">📈</div><div class="pipe-label">Results</div></div>
+                </div>
+                <div class="method-display" id="method-stage">
+                    <div class="method-content">
+                        <svg viewBox="0 0 700 260">
+                            <text x="350" y="120" text-anchor="middle" font-family="DM Sans" font-size="18" fill="#94a3b8" font-weight="700">Click ▶ to walk through each step</text>
+                        </svg>
+                    </div>
+                </div>
+                <button class="step-btn" id="method-btn" onclick="nextMethodStep()">▶ Step 1: Data</button>
+            </div>
+        </div>
+
+        <!-- LAB -->
+        <div id="view-lab" class="view-panel">
+            <div class="lab-layout">
+                <div class="lab-panel">
+                    <h3>📡 Participation</h3>
+                    <div class="part-big" id="part-display">0%</div>
+                    <div class="part-sub">Households enrolled</div>
+                    <div>
+                        <div class="city-section"><div class="city-row"><span class="city-label">Dallas–Fort Worth</span><span class="city-weight">35%</span></div><div class="comm-grid" id="grid-dal"></div></div>
+                        <div class="city-section"><div class="city-row"><span class="city-label">Houston</span><span class="city-weight">35%</span></div><div class="comm-grid" id="grid-hou"></div></div>
+                        <div class="city-section"><div class="city-row"><span class="city-label">Austin</span><span class="city-weight">15%</span></div><div class="comm-grid" id="grid-aus"></div></div>
+                        <div class="city-section"><div class="city-row"><span class="city-label">San Antonio</span><span class="city-weight">15%</span></div><div class="comm-grid" id="grid-sa"></div></div>
+                    </div>
+                    <div class="slider-group"><span class="slider-label">Participation Rate</span><input type="range" id="part-slider" min="0" max="100" value="0" step="10" oninput="updateLab()"></div>
+                    <h3 style="margin-top:16px;">🌡️ Season</h3>
+                    <div class="season-sw">
+                        <button class="season-btn active" id="btn-sum" onclick="setLabSeason('summer')">☀️ Summer</button>
+                        <button class="season-btn" id="btn-win" onclick="setLabSeason('winter')">❄️ Winter</button>
+                    </div>
+                </div>
+                <div class="lab-panel" style="background:var(--panel-glass);position:relative;">
+                    <div id="snow-overlay" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:50;"></div>
+                    <div class="room-viz">
+                        <svg viewBox="0 0 500 380">
+                            <rect x="40" y="70" width="420" height="280" rx="8" fill="#fafafa" stroke="#e2e8f0" stroke-width="2"/>
+                            <rect x="40" y="310" width="420" height="40" fill="#f1f5f9"/>
+                            <rect x="300" y="100" width="120" height="100" rx="6" fill="#e0f2fe" stroke="#cbd5e1" stroke-width="2"/>
+                            <line x1="360" y1="100" x2="360" y2="200" stroke="#cbd5e1" stroke-width="1.5"/>
+                            <line x1="300" y1="150" x2="420" y2="150" stroke="#cbd5e1" stroke-width="1.5"/>
+                            <rect x="90" y="130" width="46" height="60" rx="8" fill="white" stroke="#cbd5e1" stroke-width="2"/>
+                            <circle cx="113" cy="155" r="14" fill="none" stroke="var(--accent)" stroke-width="2.5" opacity="0.6"/>
+                            <text x="113" y="160" text-anchor="middle" fill="var(--accent)" font-family="JetBrains Mono" font-weight="bold" font-size="11" id="wall-temp">72</text>
+                            <text x="113" y="182" text-anchor="middle" fill="#94a3b8" font-size="7" font-weight="600">°F</text>
+                            <rect x="180" y="78" width="80" height="24" rx="4" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1.5"/>
+                            <g id="ac-lines" opacity="0">
+                                <line x1="195" y1="104" x2="195" y2="130" stroke="#93c5fd" stroke-width="1" stroke-dasharray="3 3"/>
+                                <line x1="210" y1="104" x2="210" y2="140" stroke="#93c5fd" stroke-width="1" stroke-dasharray="3 3"/>
+                                <line x1="225" y1="104" x2="225" y2="125" stroke="#93c5fd" stroke-width="1" stroke-dasharray="3 3"/>
+                                <line x1="240" y1="104" x2="240" y2="135" stroke="#93c5fd" stroke-width="1" stroke-dasharray="3 3"/>
+                            </g>
+                            <!-- Heater glow for winter -->
+                            <rect id="heater-glow" x="60" y="260" width="60" height="45" rx="6" fill="none" stroke="transparent" stroke-width="2" opacity="0"/>
+                            <g id="avatar" transform="translate(230,300)">
+                                <rect x="-12" y="-55" width="10" height="55" rx="5" fill="#64748b"/>
+                                <rect x="2" y="-55" width="10" height="55" rx="5" fill="#64748b"/>
+                                <g id="c-shirt"><rect x="-20" y="-120" width="40" height="65" rx="8" fill="#60a5fa"/></g>
+                                <g id="c-jacket" style="display:none;"><rect x="-22" y="-122" width="44" height="68" rx="8" fill="#ea580c"/><line x1="0" y1="-122" x2="0" y2="-54" stroke="#c2410c" stroke-width="2"/></g>
+                                <circle cx="0" cy="-140" r="22" fill="#fcd34d"/>
+                                <circle cx="-7" cy="-145" r="2.5" fill="#1e293b"/>
+                                <circle cx="7" cy="-145" r="2.5" fill="#1e293b"/>
+                                <path id="mouth" d="M-6,-134 Q0,-129 6,-134" fill="none" stroke="#1e293b" stroke-width="2" stroke-linecap="round"/>
+                                <g id="sweat" style="display:none;"><text x="22" y="-150" font-size="16">💧</text></g>
+                                <g id="shiver" style="display:none;"><text x="-35" y="-120" font-size="12">🥶</text></g>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="thermostat-control" style="z-index:20;position:relative;">
+                        <div class="thermo-row"><span class="thermo-label">Your Thermostat</span><span class="thermo-val" id="slider-val">72°F</span></div>
+                        <input type="range" id="temp-slider" min="65" max="80" value="72" oninput="updateLab()">
+                    </div>
+                </div>
+                <div class="lab-panel">
+                    <h3>🔌 Grid</h3>
+                    <div class="grid-viz">
+                        <div id="smoke-container"></div>
+                        <svg viewBox="0 0 200 300">
+                            <rect x="140" y="120" width="30" height="180" rx="3" fill="#78909C"/>
+                            <rect x="137" y="115" width="36" height="12" rx="2" fill="#607D8B"/>
+                            <path d="M25,300 L55,60 L85,300" fill="none" stroke="#546E7A" stroke-width="3.5" stroke-linejoin="round"/>
+                            <line x1="38" y1="120" x2="72" y2="120" stroke="#546E7A" stroke-width="3"/>
+                            <line x1="42" y1="180" x2="68" y2="180" stroke="#546E7A" stroke-width="2.5"/>
+                            <path id="lab-wire" d="M-10,120 C50,110 100,130 220,125" class="wire"/>
+                            <circle id="lab-electron" r="5" class="electron"><animateMotion dur="1.8s" repeatCount="indefinite" path="M-10,120 C50,110 100,130 220,125"/></circle>
+                            <g id="spark" class="spark">
+                                <line x1="195" y1="110" x2="210" y2="100" stroke="#fbbf24" stroke-width="2.5"/>
+                                <line x1="195" y1="130" x2="210" y2="140" stroke="#fbbf24" stroke-width="2.5"/>
+                                <line x1="200" y1="120" x2="218" y2="120" stroke="#fbbf24" stroke-width="2.5"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="research-note" id="research-note"></div>
+                    <div class="lab-status-bar safe" id="lab-status">✓ STABLE</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DATA -->
+        <div id="view-data" class="view-panel">
+            <div class="data-layout">
+                <div class="data-card">
+                    <h3>🗺️ 4-City Weather</h3>
+                    <div class="map-area">
+                        <svg class="texas-outline" viewBox="0 0 200 200"><path d="M60,10 L140,10 L150,40 L180,60 L190,120 L160,180 L100,190 L60,160 L30,100 L20,60 Z" fill="#1e293b"/></svg>
+                        <div class="city-marker" style="top:22%;left:52%;"><div class="city-dot hot" id="dot-dal">☀️</div><span class="city-name">Dallas</span><span class="city-temp hot" id="temp-dal">103°F</span></div>
+                        <div class="city-marker" style="top:52%;left:38%;"><div class="city-dot hot" id="dot-aus">☀️</div><span class="city-name">Austin</span><span class="city-temp hot" id="temp-aus">99°F</span></div>
+                        <div class="city-marker" style="top:65%;left:30%;"><div class="city-dot cool" id="dot-sa">🌤️</div><span class="city-name">San Antonio</span><span class="city-temp cool" id="temp-sa">95°F</span></div>
+                        <div class="city-marker" style="top:58%;left:62%;"><div class="city-dot cool" id="dot-hou">🌧️</div><span class="city-name">Houston</span><span class="city-temp cool" id="temp-hou">88°F</span></div>
+                    </div>
+                </div>
+                <div class="data-card">
+                    <h3>⚖️ Load Balance</h3>
+                    <div class="weather-toggle">
+                        <button class="active" id="btn-div" onclick="setWeather('diverse')">Diverse ✓</button>
+                        <button id="btn-uni" onclick="setWeather('uniform')">Uniform ✗</button>
+                    </div>
+                    <div class="balance-indicator">
+                        <div class="balance-icon" id="balance-icon">⚖️</div>
+                        <div class="balance-label" id="data-status" style="color:var(--safe);">BALANCED</div>
+                        <div class="balance-desc" id="data-desc">Houston rain offsets Dallas heat → accurate composite load.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STORY -->
+        <div id="view-story" class="view-panel">
+            <div class="story-container">
+                <div class="story-screen">
+                    <svg viewBox="0 0 800 400">
+                        <defs><linearGradient id="sky-grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#bae6fd"/><stop offset="100%" stop-color="#f0f9ff"/></linearGradient></defs>
+                        <rect width="800" height="400" fill="url(#sky-grad)"/>
+                        <rect x="0" y="300" width="800" height="100" fill="#d1d5db"/>
+                        <rect x="0" y="295" width="800" height="10" fill="#e5e7eb"/>
+                        <g transform="translate(120,295)"><path d="M0,0 L25,-190 L50,0" fill="none" stroke="#475569" stroke-width="5" stroke-linejoin="round"/><line x1="10" y1="-130" x2="40" y2="-130" stroke="#475569" stroke-width="4"/><line x1="12" y1="-80" x2="38" y2="-80" stroke="#475569" stroke-width="3"/></g>
+                        <g transform="translate(480,140)"><rect x="20" y="60" width="160" height="100" rx="4" fill="white" stroke="#cbd5e1" stroke-width="2"/><path d="M0,65 L100,-15 L200,65" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2.5" stroke-linejoin="round"/><rect x="75" y="95" width="50" height="65" rx="3" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1.5"/><circle cx="115" cy="128" r="3" fill="#94a3b8"/><rect x="145" y="80" width="25" height="18" rx="3" fill="white" stroke="#cbd5e1" stroke-width="1"/><text x="157" y="93" text-anchor="middle" font-family="JetBrains Mono" font-size="9" font-weight="bold" fill="#0ea5e9" id="story-temp">72°</text></g>
+                        <path id="story-wire" d="M145,105 C280,95 400,120 500,165" fill="none" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round"/>
+                        <circle id="story-electron" r="6" fill="#fbbf24" opacity="0"><animateMotion dur="1.8s" repeatCount="indefinite" path="M145,105 C280,95 400,120 500,165"/></circle>
+                        <g id="story-alert" opacity="0"><rect x="280" y="40" width="240" height="44" rx="10" fill="rgba(239,68,68,0.12)"/><text x="400" y="68" text-anchor="middle" font-family="DM Sans" font-size="18" font-weight="900" fill="#ef4444">⚠️ GRID OVERLOAD</text></g>
+                        <g id="story-success" opacity="0"><rect x="290" y="40" width="220" height="44" rx="10" fill="rgba(16,185,129,0.12)"/><text x="400" y="68" text-anchor="middle" font-family="DM Sans" font-size="18" font-weight="900" fill="#10b981">✅ GRID SAVED</text></g>
+                        <circle cx="700" cy="60" r="32" fill="#fbbf24" opacity="0.8"><animate attributeName="r" values="32;35;32" dur="3s" repeatCount="indefinite"/></circle>
+                    </svg>
+                    <div class="story-steps">
+                        <div class="story-step-dot" id="sdot-0"></div><div class="story-step-dot" id="sdot-1"></div><div class="story-step-dot" id="sdot-2"></div><div class="story-step-dot" id="sdot-3"></div>
+                    </div>
+                </div>
+                <div class="story-bar">
+                    <div class="story-text" id="story-msg">Texas summer peak. Press Start.</div>
+                    <button class="btn-play" id="story-play-btn" onclick="runStory()">▶ Start</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+const APP={season:'summer',temp:72,part:0,smokeInt:null,methodStep:0,storyRunning:false};
+window.curLoad=0;
+
+function init(){
+    createGrid('grid-dal',8);createGrid('grid-hou',8);
+    createGrid('grid-aus',4);createGrid('grid-sa',4);
+    APP.smokeInt=setInterval(spawnSmoke,250);
+    updateLab();
+}
+function createGrid(id,n){const el=document.getElementById(id);for(let i=0;i<n;i++){const d=document.createElement('div');d.className='house-block';el.appendChild(d);}}
+function setTab(id,btn){document.querySelectorAll('.view-panel').forEach(p=>p.classList.remove('active'));document.getElementById('view-'+id).classList.add('active');document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+
+/* ═══ METHODOLOGY SVG DIAGRAMS ═══ */
+function getMethodSVG(step){
+    const arrDef=`<defs><marker id="a" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#94a3b8"/></marker></defs>`;
+    const flowLine=(x1,y1,x2,y2,c)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c||'#94a3b8'}" stroke-width="2" marker-end="url(#a)"/>`;
+    const animLine=(x1,y1,x2,y2,c)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c||'#0ea5e9'}" stroke-width="2.5" stroke-dasharray="6 4"><animate attributeName="stroke-dashoffset" values="0;-20" dur="1.5s" repeatCount="indefinite"/></line>`;
+    const box=(x,y,w,h,fill,stroke,lines)=>{
+        let s=`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="12" fill="${fill}" stroke="${stroke}" stroke-width="2"/>`;
+        lines.forEach((l,i)=>{
+            const fs=l.startsWith('★')?'font-weight="800"':'';
+            const txt=l.replace('★','');
+            const sz=l.startsWith('★')?13:11;
+            s+=`<text x="${x+w/2}" y="${y+24+i*18}" text-anchor="middle" font-family="DM Sans" font-size="${sz}" ${fs} fill="${stroke}">${txt}</text>`;
+        });
+        return s;
+    };
+
+    if(step===1) return `<svg viewBox="0 0 700 240">${arrDef}
+        ${box(30,20,110,70,'#fef3c7','#b45309',['★Dallas ☀️','★Houston 🌧️'])}
+        ${box(30,110,110,70,'#dbeafe','#1d4ed8',['★Austin','★San Antonio'])}
+        ${flowLine(145,55,240,100)}${flowLine(145,145,240,120)}
+        ${box(245,70,160,80,'#f0f9ff','#0369a1',['★Weighted Blend','4 city temps','→ 1 composite'])}
+        ${animLine(410,110,480,110)}
+        ${box(485,70,180,80,'#ecfdf5','#047857',['★Training Data','8,760 hourly rows','temp + load + calendar'])}
+    </svg>`;
+
+    if(step===2) return `<svg viewBox="0 0 700 240">${arrDef}
+        ${box(25,65,120,110,'#f1f5f9','#475569',['★Input Features','Temp, Hour,','Day type,','Holiday…'])}
+        ${flowLine(150,120,220,120)}
+        <rect x="225" y="50" width="150" height="140" rx="16" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5"/>
+        <text x="300" y="90" text-anchor="middle" font-size="30">🤖</text>
+        <text x="300" y="118" text-anchor="middle" font-family="DM Sans" font-size="14" font-weight="800" fill="#1e40af">XGBoost</text>
+        <text x="300" y="140" text-anchor="middle" font-family="JetBrains Mono" font-size="12" fill="#3b82f6">R² = 0.996</text>
+        <text x="300" y="162" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#64748b">99.6% accuracy</text>
+        ${animLine(380,120,445,80,'#2563eb')}${animLine(380,120,445,160,'#10b981')}
+        ${box(450,40,220,60,'#fef3c7','#b45309',['★Baseline Load','Normal thermostat'])}
+        ${box(450,130,220,80,'#ecfdf5','#047857',['★"What If" Loads','+1°F … +4°F raise','10% … 100% adoption'])}
+    </svg>`;
+
+    if(step===3) return `<svg viewBox="0 0 700 240">${arrDef}
+        ${box(25,40,130,65,'#fef3c7','#b45309',['★Baseline'])}
+        ${box(25,125,130,65,'#ecfdf5','#047857',['★Reduced Load'])}
+        ${flowLine(160,72,235,105)}${flowLine(160,157,235,130)}
+        <rect x="240" y="60" width="170" height="120" rx="16" fill="#fef2f2" stroke="#dc2626" stroke-width="2.5"/>
+        <text x="325" y="100" text-anchor="middle" font-size="28">🎲</text>
+        <text x="325" y="125" text-anchor="middle" font-family="DM Sans" font-size="13" font-weight="800" fill="#b91c1c">Outage Simulator</text>
+        <text x="325" y="148" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#64748b">Generator failures</text>
+        <text x="325" y="164" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#64748b">vs. demand, hourly</text>
+        ${animLine(415,120,475,120,'#dc2626')}
+        ${box(480,60,190,120,'#eff6ff','#1d4ed8',['★Blackout Risk','(LOLE)','','Target: ≤ 0.1','days/year'])}
+    </svg>`;
+
+    if(step===4) return `<svg viewBox="0 0 700 240">
+        ${box(30,15,290,100,'#ecfdf5','#047857',['★⚡ Grid Capacity Gained','+4°F at 20% adoption','= adding firm power plant','(ELCC value)'])}
+        ${box(30,130,290,100,'#eff6ff','#1d4ed8',['★🌱 CO₂ Avoided','Less peak generation','→ fewer dirty plants run','(marginal emissions)'])}
+        ${box(380,15,290,100,'#fef3c7','#b45309',['★🔑 Key Finding','Summer cooling DR → high value','Winter heating DR → zero capacity','(ERCOT peaks in summer)'])}
+        ${box(380,130,290,100,'#f5f3ff','#7c3aed',['★🎯 Bottom Line','Small thermostat change','+ modest adoption','= big grid + climate win'])}
+    </svg>`;
+}
+
+function nextMethodStep(){
+    APP.methodStep++;
+    const fill=document.getElementById('pipe-fill'),display=document.getElementById('method-stage'),btn=document.getElementById('method-btn');
+    const labels=['Data','Predict','Risk','Results'];
+    if(APP.methodStep>4){
+        APP.methodStep=0;fill.style.width='0%';
+        document.querySelectorAll('.pipe-node').forEach(n=>{n.classList.remove('active','done');});
+        display.innerHTML=`<div class="method-content"><svg viewBox="0 0 700 260"><text x="350" y="130" text-anchor="middle" font-family="DM Sans" font-size="18" fill="#94a3b8" font-weight="700">Done — click to restart</text></svg></div>`;
+        btn.innerHTML='▶ Step 1: Data';return;
+    }
+    for(let i=1;i<APP.methodStep;i++){const p=document.getElementById(`node-${i}`);p.classList.remove('active');p.classList.add('done');}
+    document.getElementById(`node-${APP.methodStep}`).classList.add('active');
+    fill.style.width=((APP.methodStep-1)/3*100)+'%';
+    btn.innerHTML=APP.methodStep<4?`▶ Step ${APP.methodStep+1}: ${labels[APP.methodStep]}`:'↺ Reset';
+    display.innerHTML=`<div class="method-content">${getMethodSVG(APP.methodStep)}</div>`;
+}
+
+/* ═══ STORY ═══ */
+function runStory(){
+    if(APP.storyRunning)return;APP.storyRunning=true;
+    const btn=document.getElementById('story-play-btn'),txt=document.getElementById('story-msg');
+    const wire=document.getElementById('story-wire'),alert=document.getElementById('story-alert');
+    const success=document.getElementById('story-success'),el=document.getElementById('story-electron'),st=document.getElementById('story-temp');
+    const dots=[0,1,2,3].map(i=>document.getElementById(`sdot-${i}`));
+    btn.style.display='none';dots.forEach(d=>d.className='story-step-dot');
+    alert.setAttribute('opacity','0');success.setAttribute('opacity','0');el.setAttribute('opacity','0.8');
+    dots[0].classList.add('current');txt.innerText="105°F — every AC maxed out.";wire.setAttribute('stroke','#94a3b8');wire.style.filter='none';
+    setTimeout(()=>{dots[0].className='story-step-dot done';dots[1].classList.add('current');txt.innerText="Demand exceeds supply. Blackouts loom.";wire.setAttribute('stroke','#ef4444');wire.style.filter='drop-shadow(0 0 6px rgba(239,68,68,0.5))';alert.setAttribute('opacity','1');},3500);
+    setTimeout(()=>{dots[1].className='story-step-dot done';dots[2].classList.add('current');txt.innerText="20% raise thermostat: 72° → 76°F.";st.textContent='76°';},7000);
+    setTimeout(()=>{dots[2].className='story-step-dot done';dots[3].classList.add('current');txt.innerText="Grid stable. Blackout averted.";wire.setAttribute('stroke','#10b981');wire.style.filter='drop-shadow(0 0 5px rgba(16,185,129,0.4))';alert.setAttribute('opacity','0');success.setAttribute('opacity','1');},10500);
+    setTimeout(()=>{dots[3].className='story-step-dot done';btn.style.display='block';btn.innerText='↺ Replay';st.textContent='72°';APP.storyRunning=false;},14000);
+}
+
+/* ═══ DATA ═══ */
+function setWeather(mode){
+    const s=document.getElementById('data-status'),d=document.getElementById('data-desc'),ic=document.getElementById('balance-icon');
+    const bD=document.getElementById('btn-div'),bU=document.getElementById('btn-uni');
+    const dd=document.getElementById('dot-dal'),dh=document.getElementById('dot-hou'),da=document.getElementById('dot-aus'),ds=document.getElementById('dot-sa'),th=document.getElementById('temp-hou');
+    if(mode==='diverse'){
+        dd.className='city-dot hot';dd.textContent='☀️';dh.className='city-dot cool';dh.textContent='🌧️';
+        da.className='city-dot hot';da.textContent='☀️';ds.className='city-dot cool';ds.textContent='🌤️';
+        th.className='city-temp cool';th.textContent='88°F';
+        s.textContent='BALANCED';s.style.color='var(--safe)';ic.textContent='⚖️';ic.style.animation='float 3s ease infinite';
+        d.textContent="Houston rain offsets Dallas heat → accurate composite load.";
+        bD.classList.add('active');bU.classList.remove('active');
+    }else{
+        dd.className='city-dot hot';dd.textContent='☀️';dh.className='city-dot hot';dh.textContent='☀️';
+        da.className='city-dot hot';da.textContent='☀️';ds.className='city-dot hot';ds.textContent='☀️';
+        th.className='city-temp hot';th.textContent='103°F';
+        s.textContent='OVERLOAD';s.style.color='var(--danger)';ic.textContent='⚠️';ic.style.animation='pulse 0.8s infinite';
+        d.textContent="Uniform temp exaggerates peak → overstates risk.";
+        bU.classList.add('active');bD.classList.remove('active');
+    }
+}
+
+/* ═══ LAB ═══ */
+function setLabSeason(s){
+    APP.season=s;document.body.className=s==='winter'?'winter-mode':'';
+    document.getElementById('btn-sum').classList.toggle('active',s==='summer');
+    document.getElementById('btn-win').classList.toggle('active',s==='winter');
+    document.getElementById('temp-slider').value=72;
+    const sn=document.getElementById('snow-overlay'),fr=document.getElementById('frost-vignette');
+    sn.innerHTML='';fr.style.display=s==='winter'?'block':'none';
+    if(s==='winter'){for(let i=0;i<25;i++){const f=document.createElement('div');f.className='snowflake';f.style.left=Math.random()*100+'%';f.style.top='-10px';f.style.animationDuration=(2.5+Math.random()*3)+'s';f.style.animationDelay=Math.random()*2+'s';const sz=3+Math.random()*4;f.style.width=sz+'px';f.style.height=sz+'px';sn.appendChild(f);}}
+    updateLab();
+}
+
+function updateLab(){
+    const temp=parseInt(document.getElementById('temp-slider').value);
+    const part=parseInt(document.getElementById('part-slider').value);
+    APP.temp=temp;APP.part=part;
+    document.getElementById('wall-temp').textContent=temp;
+    document.getElementById('slider-val').textContent=temp+'°F';
+    document.getElementById('part-display').textContent=part+'%';
+    const p=part/100;
+    updateGridNodes('grid-dal',8,p);updateGridNodes('grid-hou',8,p);
+    updateGridNodes('grid-aus',4,p);updateGridNodes('grid-sa',4,p);
+
+    // Avatar
+    const shirt=document.getElementById('c-shirt'),jacket=document.getElementById('c-jacket');
+    const sweat=document.getElementById('sweat'),shiver=document.getElementById('shiver');
+    const mouth=document.getElementById('mouth'),ac=document.getElementById('ac-lines');
+    const hg=document.getElementById('heater-glow');
+    shirt.style.display='block';jacket.style.display='none';sweat.style.display='none';shiver.style.display='none';
+    hg.setAttribute('stroke','transparent');hg.setAttribute('opacity','0');
+
+    if(APP.season==='winter'){
+        ac.setAttribute('opacity','0');
+        if(temp<=68){jacket.style.display='block';shirt.style.display='none';mouth.setAttribute('d','M-6,-134 Q0,-129 6,-134');}
+        else if(temp>=76){mouth.setAttribute('d','M-6,-134 Q0,-129 6,-134');hg.setAttribute('stroke','#ef4444');hg.setAttribute('fill','rgba(239,68,68,0.08)');hg.setAttribute('opacity','1');}
+        else{mouth.setAttribute('d','M-6,-133 Q0,-133 6,-133');}
+        if(temp<=66){shiver.style.display='block';}
+    }else{
+        hg.setAttribute('opacity','0');
+        if(temp>=78){sweat.style.display='block';mouth.setAttribute('d','M-6,-132 Q0,-135 6,-132');}
+        else if(temp>=74){mouth.setAttribute('d','M-6,-133 Q0,-133 6,-133');}
+        else{mouth.setAttribute('d','M-6,-134 Q0,-129 6,-134');}
+        ac.setAttribute('opacity',temp<=74?'1':'0.4');
+    }
+
+    // Load calculation
+    let userLoad=0,note='';
+    if(APP.season==='summer'){
+        userLoad=(80-temp)*8;
+        note='Summer: cooling drives peak. Raise setpoint → less load → grid relief + CO₂ cut.';
+    }else{
+        // Winter: cranking heat UP = more load
+        userLoad=(temp-60)*6;
+        if(temp>=76) note='Winter: heater cranked high → heavy load + high CO₂.';
+        else if(temp>=71) note='Winter: moderate heating. Grid OK but still burning gas → CO₂.';
+        else note='Winter: low heat demand. Grid stable, minimal emissions.';
+    }
+
+    let totalLoad=userLoad*(1-part*0.008);
+    window.curLoad=totalLoad;
+
+    const wire=document.getElementById('lab-wire'),elec=document.getElementById('lab-electron');
+    const stat=document.getElementById('lab-status'),spark=document.getElementById('spark');
+    const gD=document.getElementById('global-dot'),gS=document.getElementById('global-status');
+    elec.classList.add('moving');
+
+    const sumStress=APP.season==='summer'&&totalLoad>50;
+    const winStress=APP.season==='winter'&&totalLoad>70;
+    const winWarn=APP.season==='winter'&&totalLoad>45&&totalLoad<=70;
+
+    if(sumStress||winStress){
+        wire.setAttribute('class','wire stressed');spark.classList.add('active');
+        stat.textContent='⚠ CRITICAL';stat.className='lab-status-bar danger';
+        gD.style.background='var(--danger)';gD.style.boxShadow='0 0 8px var(--danger-glow)';
+        gS.textContent='STRESSED';gS.style.color='var(--danger)';
+    }else if(winWarn){
+        wire.setAttribute('class','wire warn');spark.classList.remove('active');
+        stat.textContent='⚡ HIGH LOAD';stat.className='lab-status-bar warn';
+        gD.style.background='var(--warn)';gD.style.boxShadow='0 0 8px var(--warn-glow)';
+        gS.textContent='HIGH LOAD';gS.style.color='var(--warn)';
+    }else{
+        wire.setAttribute('class','wire safe');spark.classList.remove('active');
+        stat.textContent='✓ STABLE';stat.className='lab-status-bar safe';
+        gD.style.background='var(--safe)';gD.style.boxShadow='0 0 8px var(--safe-glow)';
+        gS.textContent='STABLE';gS.style.color='var(--safe)';
+    }
+    document.getElementById('research-note').innerText=note;
+}
+
+function updateGridNodes(id,total,p){const el=document.getElementById(id);const a=Math.round(total*p);for(let i=0;i<el.children.length;i++)el.children[i].classList.toggle('active',i<a);}
+
+function spawnSmoke(){
+    let spawn=false,gray=120;
+    if(APP.season==='summer'){if(window.curLoad>40){spawn=true;gray=100;}}
+    else{if(window.curLoad>20){spawn=true;gray=180;}}
+    if(!spawn)return;
+    const box=document.getElementById('smoke-container'),s=document.createElement('div');s.className='smoke';
+    const sz=8+Math.random()*14;s.style.width=sz+'px';s.style.height=sz+'px';
+    s.style.right=(30+Math.random()*15)+'px';s.style.bottom='55%';
+    s.style.background=`rgba(${gray},${gray},${gray},0.6)`;
+    box.appendChild(s);setTimeout(()=>s.remove(),2900);
+}
+
+init();
+</script>
+</body>
+</html>
